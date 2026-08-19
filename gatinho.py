@@ -42,6 +42,47 @@ class Gatinho:  # Nome da classe em maiúsculo por convenção
         # Atualiza a imagem atual
         self.imagem_atual = self.animacao_correr[self.animacao_index]
 
+    def mover(self):
+        # Captura as teclas pressionadas
+        teclas = pygame.key.get_pressed()
+        andando = False
+
+        # Movimento para a Esquerda
+        if teclas[pygame.K_LEFT] or teclas[pygame.K_a]:
+            self.x -= self.speed
+            self.olhandodireita = False
+            andando = True
+
+        # Movimento para a Direita
+        elif teclas[pygame.K_RIGHT] or teclas[pygame.K_d]:
+            self.x += self.speed
+            self.olhandodireita = True
+            andando = True
+
+        # Atualiza a animação somente se estiver se movendo
+        if andando:
+            self.correr()
+        else:
+            self.imagem_atual = self.animacao_correr[0]  # Frame parado
+
+        # Lógica de Pulo
+        if (teclas[pygame.K_SPACE] or teclas[pygame.K_w]) and not self.pulo:
+            self.velocidade_y = -14
+            self.pulo = True
+
+        # Aplica a Gravidade
+        self.velocidade_y += self.gravidade
+        self.y += self.velocidade_y
+
+        # Colisão simples com o chão (limite em Y = 400)
+        if self.y >= 400:
+            self.y = 400
+            self.velocidade_y = 0
+            self.pulo = False
+
+        # Atualiza a posição do retângulo do personagem
+        self.rect.topleft = (self.x, self.y)
+
     def desenhar(self, tela):
         # Copia a imagem atual
         sprite = self.imagem_atual
